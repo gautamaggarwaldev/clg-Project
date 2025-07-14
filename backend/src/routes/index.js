@@ -3,6 +3,7 @@ import userAuthRoute from "./userRoutes.js";
 import urlScanRoute from "./urlScanRoutes.js";
 import fileScanRoute from "./fileScanRoutes.js";
 import ipScanRoute from "./ipScanRoutes.js";
+import domainRoute from "./domainRoutes.js";
 
 const router = express.Router();
 
@@ -22,6 +23,10 @@ const Routes = [
     {
         path: "/ip",
         route: ipScanRoute,
+    }, 
+    {
+        path: "/domain",
+        route: domainRoute,
     },
 ];
   
