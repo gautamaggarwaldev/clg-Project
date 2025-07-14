@@ -4,6 +4,7 @@ import {
   uploadAndScanFile,
   getFileScanReport,
   downloadFileReportPDF,
+  getReportByHash,
 } from '../controller/fileScanController.js';
 
 const router = express.Router();
@@ -12,5 +13,6 @@ const upload = multer({ dest: 'uploads/' });
 router.post('/upload', upload.single('file'), uploadAndScanFile);
 router.get('/report/:scanId', getFileScanReport);
 router.get('/report/:scanId/pdf', downloadFileReportPDF);
+router.get('/hash-report/:hash', getReportByHash);
 
 export default router;

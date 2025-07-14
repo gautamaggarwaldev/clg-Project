@@ -159,7 +159,45 @@ const downloadFileReportPDF = async (req, res) => {
   }
 };
 
+const getReportByHash = async (req, res) => {
+  const hash = req.params.hash;
+  const apiKey = process.env.VIRUSTOTAL_API_KEY;
+
+  try {
+    const response = await axios.get(`https://www.virustotal.com/api/v3/files/${hash}`, {
+      headers: { 'x-apikey': apiKey }
+    });
+
+    const data = response.data.data;
+
+    res.status(200).json({
+      success: true,
+      message: 'File report fetched successfully by hash',
+      data: {
+        hash: hash,
+        status: data.attributes.last_analysis_stats,
+        date: data.attributes.date,
+        file_info: {
+          sha256: data.attributes.sha256,
+          md5: data.attributes.md5,
+          sha1: data.attributes.sha1,
+          size: data.attributes.size
+        },
+        results: data.attributes.last_analysis_results
+      }
+    });
+
+  } catch (error) {
+    console.error('Hash report error:', error.message);
+    res.status(400).json({
+      success: false,
+      message: 'Failed to fetch report by hash',
+      error: error.response?.data || error.message
+    });
+  }
+};
 
 
-export { uploadAndScanFile, getFileScanReport, downloadFileReportPDF };
+
+export { uploadAndScanFile, getFileScanReport, downloadFileReportPDF, getReportByHash };
 
