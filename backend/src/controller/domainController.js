@@ -67,5 +67,7 @@ const getDomainHistory = async (req, res) => {
     res.status(500).json({ message: 'Error fetching domain history', error: err.message });
   }
 };
+
+
  
 export {  getDomainReport, downloadDomainReportPDF, getDomainHistory };

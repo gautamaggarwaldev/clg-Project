@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
+import { toast } from 'react-toastify';
 
 const ScanURL = () => {
   const [url, setUrl] = useState("");

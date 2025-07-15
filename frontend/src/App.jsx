@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import Tools from "./pages/Tools";
 import ScanURL from "./pages/ScanURL";
+import DomainCheck from "./pages/DomainCheck";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/app/tools/scan-url" element={<ScanURL />} />
+        <Route path="/app/tools/domain-check" element={<DomainCheck />} />
 
         <Route
           path="/app"
