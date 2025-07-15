@@ -20,6 +20,23 @@ const getUserByIdService = async (userId) => {
 };
 
 const updateUserProfileService = async (userId, updateData) => {
+  // Check for duplicate email
+  if (updateData.email) {
+    const existingEmailUser = await User.findOne({ email: updateData.email });
+    if (existingEmailUser && existingEmailUser._id.toString() !== userId) {
+      throw new Error("Email is already in use.");
+    }
+  }
+
+  // Check for duplicate phone
+  if (updateData.phone) {
+    const existingPhoneUser = await User.findOne({ phone: updateData.phone });
+    if (existingPhoneUser && existingPhoneUser._id.toString() !== userId) {
+      throw new Error("Phone is already in use.");
+    }
+  }
+
+  // Update user
   const user = await User.findByIdAndUpdate(userId, updateData, {
     new: true,
     runValidators: true,
@@ -27,6 +44,7 @@ const updateUserProfileService = async (userId, updateData) => {
 
   return user;
 };
+
 
 export {
   registerUserService,
