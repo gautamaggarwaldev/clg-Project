@@ -15,6 +15,7 @@ import ScanURL from "./pages/ScanURL";
 import DomainCheck from "./pages/DomainCheck";
 import IpCheck from "./pages/IpCheck";
 import FileUploadScan from "./pages/FileUploadScan";
+import HashReport from "./pages/HashReport";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/app/tools/domain-check" element={<DomainCheck />} />
         <Route path="/app/tools/ip-scan" element={<IpCheck />} />
         <Route path="/app/tools/file-upload" element={<FileUploadScan />} />
+        <Route path="/app/tools/hash-report" element={<HashReport />} />
 
         <Route
           path="/app"

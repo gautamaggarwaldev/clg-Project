@@ -50,7 +50,6 @@ const uploadAndScanFile = async (req, res) => {
   }
 };
 
-
 const getFileScanReport = async (req, res) => {
   try {
     const { scanId } = req.params;
@@ -168,11 +167,51 @@ const downloadFileReportPDF = async (req, res) => {
   }
 };
 
+// const getReportByHash = async (req, res) => {
+//   const hash = req.params.hash;
+//   const apiKey = process.env.VIRUSTOTAL_API_KEY;
+
+//   try {
+//     const response = await axios.get(
+//       `https://www.virustotal.com/api/v3/files/${hash}`,
+//       {
+//         headers: { "x-apikey": apiKey },
+//       }
+//     );
+
+//     const data = response.data.data;
+
+//     res.status(200).json({
+//       success: true,
+//       message: "File report fetched successfully by hash",
+//       data: {
+//         hash: hash,
+//         status: data.attributes.last_analysis_stats,
+//         date: data.attributes.date,
+//         file_info: {
+//           sha256: data.attributes.sha256,
+//           md5: data.attributes.md5,
+//           sha1: data.attributes.sha1,
+//           size: data.attributes.size,
+//         },
+//         results: data.attributes.last_analysis_results,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Hash report error:", error.message);
+//     res.status(400).json({
+//       success: false,
+//       message: "Failed to fetch report by hash",
+//       error: error.response?.data || error.message,
+//     });
+//   }
+// };
 const getReportByHash = async (req, res) => {
   const hash = req.params.hash;
   const apiKey = process.env.VIRUSTOTAL_API_KEY;
 
   try {
+    // First try to get the existing report
     const response = await axios.get(
       `https://www.virustotal.com/api/v3/files/${hash}`,
       {
@@ -199,15 +238,45 @@ const getReportByHash = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Hash report error:", error.message);
-    res.status(400).json({
-      success: false,
-      message: "Failed to fetch report by hash",
-      error: error.response?.data || error.message,
-    });
+    if (error.response?.status === 404) {
+      // File not found in VirusTotal, try to submit the hash for analysis
+      try {
+        const submitResponse = await axios.post(
+          `https://www.virustotal.com/api/v3/files/${hash}/analyse`,
+          {},
+          {
+            headers: { "x-apikey": apiKey },
+          }
+        );
+
+        // Return a response indicating the file is being analyzed
+        res.status(202).json({
+          success: true,
+          message:
+            "File not previously scanned. Submitted for analysis. Please check back later.",
+          data: {
+            analysis_id: submitResponse.data.data.id,
+            status: "queued",
+          },
+        });
+      } catch (submitError) {
+        console.error("Hash submission error:", submitError.message);
+        res.status(400).json({
+          success: false,
+          message: "Failed to submit hash for analysis",
+          error: submitError.response?.data || submitError.message,
+        });
+      }
+    } else {
+      console.error("Hash report error:", error.message);
+      res.status(400).json({
+        success: false,
+        message: "Failed to fetch report by hash",
+        error: error.response?.data || error.message,
+      });
+    }
   }
 };
-
 export {
   uploadAndScanFile,
   getFileScanReport,
