@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-// import toast from "react-hot-toast";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import AIDomainReport from "../components/AiDomainReport";
 
 const calculateStats = (results) => {
   const stats = {
@@ -51,7 +51,6 @@ const DomainCheck = () => {
       );
       console.log(data);
       if (data.success) {
-        // Updated to match the API response structure
         const stats =
           data.data.data.attributes.last_analysis_stats ||
           calculateStats(data.data.data.attributes.last_analysis_results);
@@ -72,58 +71,6 @@ const DomainCheck = () => {
     }
   };
 
-  //   const generatePDF = () => {
-  //     if (!report) return;
-
-  //     const doc = new jsPDF();
-
-  //     doc.setFontSize(22);
-  //     doc.setTextColor(30, 30, 30);
-  //     doc.text(`Domain Report: ${domain}`, 20, 20);
-
-  //     autoTable(doc, {
-  //       startY: 30,
-  //       head: [['Category', 'Count']],
-  //       body: Object.entries(report.stats).map(([key, val]) => [key, val]),
-  //       styles: { textColor: [50, 50, 50] },
-  //       headStyles: { fillColor: [0, 204, 204] },
-  //     });
-
-  //     autoTable(doc, {
-  //       startY: doc.lastAutoTable.finalY + 10,
-  //       head: [['Engine', 'Category', 'Result']],
-  //       body: Object.entries(report.results || {}).map(([engine, info]) => [
-  //         engine,
-  //         info?.category || 'undetected',
-  //         info?.result || 'unknown',
-  //       ]),
-  //       styles: { fontSize: 9 },
-  //       headStyles: { fillColor: [100, 100, 255] },
-  //     });
-
-  //     // Footer + Watermark
-  //     const totalPages = doc.internal.getNumberOfPages();
-  //     for (let i = 1; i <= totalPages; i++) {
-  //       doc.setPage(i);
-
-  //       // Watermark
-  //       doc.setFontSize(50);
-  //       doc.setTextColor(240, 240, 240);
-  //       doc.text('GG\'s Security Check', 35, 180, { angle: 45 });
-
-  //       // Footer text
-  //       doc.setFontSize(10);
-  //       doc.setTextColor(80, 80, 80);
-  //       doc.text(
-  //         "GG's Security | email: ggkisuraksha@email.com | phone: +91 78899555",
-  //         20,
-  //         doc.internal.pageSize.height - 10
-  //       );
-  //     }
-
-  //     doc.save(`domain-report-${domain}.pdf`);
-  //     toast.success('PDF downloaded successfully!');
-  //   };
   const generatePDF = () => {
     if (!report) return;
 
@@ -160,15 +107,15 @@ const DomainCheck = () => {
 
       // Improved Watermark - less intrusive
       doc.setFontSize(40);
-      doc.setTextColor(200); // Lighter gray that won't obscure content
-      doc.setGState(new doc.GState({ opacity: 0.4 })); // Make it more transparent
+      doc.setTextColor(200);
+      doc.setGState(new doc.GState({ opacity: 0.4 }));
       doc.text(
         "GG's Security",
         doc.internal.pageSize.width / 2,
         doc.internal.pageSize.height / 2,
         { angle: 45, align: "center" }
       );
-      doc.setGState(new doc.GState({ opacity: 1 })); // Reset opacity
+      doc.setGState(new doc.GState({ opacity: 1 }));
 
       // Footer text
       doc.setFontSize(10);
@@ -183,6 +130,7 @@ const DomainCheck = () => {
     doc.save(`domain-report-${domain}.pdf`);
     toast.success("PDF downloaded successfully!");
   };
+
   return (
     <div className="p-6 bg-[#0B1120] text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-cyan-400">Domain Check</h1>
@@ -276,6 +224,9 @@ const DomainCheck = () => {
               Download PDF Report
             </button>
           </div>
+
+          {report && <AIDomainReport domainData={report} />}
+
 
           {/* Full Detail Report */}
           {showDetail && (

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-// import toast from "react-hot-toast";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import AIRiskAnalysis from "../components/AiRiskAnalysis";
 
 const ScanURL = () => {
   const [url, setUrl] = useState("");
@@ -54,9 +54,8 @@ const ScanURL = () => {
     // Watermark on all pages
     const totalPagesExp = "{total_pages_count_string}";
     const pageContent = function (data) {
-      
-      doc.setFontSize(40); 
-      doc.setTextColor(200); 
+      doc.setFontSize(40);
+      doc.setTextColor(200);
       doc.setFont("helvetica", "bold");
 
       if (doc.setGState) {
@@ -73,7 +72,6 @@ const ScanURL = () => {
         (doc.getStringUnitWidth(text) * doc.internal.getFontSize()) /
         doc.internal.scaleFactor;
 
-      
       doc.text(text, pageWidth / 2 - textWidth / 2, pageHeight / 2, {
         angle: 45,
       });
@@ -82,7 +80,6 @@ const ScanURL = () => {
         doc.setGState(new doc.GState({ opacity: 1 }));
       }
 
-      
       doc.setFontSize(10);
       doc.setTextColor(80); // Darker text
       doc.setFont("helvetica", "normal");
@@ -235,6 +232,17 @@ const ScanURL = () => {
               Download PDF
             </button>
           </div>
+
+          {/* AI Risk Analysis Component */}
+          <AIRiskAnalysis
+            scanType="URL Scan"
+            stats={scanData.scanResult.attributes.stats}
+            results={scanData.scanResult.attributes.results}
+            meta={{
+              url: scanData.url,
+              scanDate: new Date().toISOString(),
+            }}
+          />
         </div>
       )}
 

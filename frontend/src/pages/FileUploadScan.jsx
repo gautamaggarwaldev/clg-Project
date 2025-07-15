@@ -5,6 +5,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import AIRiskAnalysis from "../components/AiRiskAnalysis";
 
 const FileUploadScan = () => {
   const [file, setFile] = useState(null);
@@ -581,6 +582,26 @@ const FileUploadScan = () => {
               </div>
             </div>
           )}
+
+          <AIRiskAnalysis
+            scanType="File Scan"
+            stats={{
+              malicious: report.stats.malicious || 0,
+              suspicious: report.stats.suspicious || 0,
+              harmless: report.stats.harmless || 0,
+              undetected: report.stats.undetected || 0,
+              timeout: report.stats.timeout || 0
+            }}
+            results={report.results}
+            meta={{
+              target: file,
+              timestamp: new Date().toISOString(),
+              creationDate: report.creation_date,
+              lastUpdate: report.last_update_date,
+              reputation: report.reputation,
+              tld: report.tld
+            }}
+          />
 
           {/* VirusTotal Link */}
           {report.virustotal_link && (

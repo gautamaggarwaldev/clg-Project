@@ -3,6 +3,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "react-toastify";
+import AIRiskAnalysis from "../components/AiRiskAnalysis";
 
 const calculateStats = (results) => {
   const stats = {
@@ -402,6 +403,26 @@ const IpCheck = () => {
               Download PDF Report
             </button>
           </div>
+
+          <AIRiskAnalysis
+            scanType="Ip Scan"
+            stats={{
+              malicious: report.stats.malicious || 0,
+              suspicious: report.stats.suspicious || 0,
+              harmless: report.stats.harmless || 0,
+              undetected: report.stats.undetected || 0,
+              timeout: report.stats.timeout || 0,
+            }}
+            results={report.results}
+            meta={{
+              target: ip,
+              timestamp: new Date().toISOString(),
+              creationDate: report.creation_date,
+              lastUpdate: report.last_update_date,
+              reputation: report.reputation,
+              tld: report.tld,
+            }}
+          />
 
           {/* Full Detail Report */}
           {showDetail && (

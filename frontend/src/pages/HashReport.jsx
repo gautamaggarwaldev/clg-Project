@@ -519,6 +519,7 @@ const HashReport = () => {
           )}
         </div>
       )}
+      
     </div>
   );
 };
