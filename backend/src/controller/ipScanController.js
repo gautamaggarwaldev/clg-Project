@@ -33,8 +33,64 @@ const VIRUSTOTAL_API_KEY = process.env.VIRUSTOTAL_API_KEY;
 // };
 
 
+
+
+// const scanIPAddress = async (req, res) => {
+//   const { ip } = req.params;
+
+//   try {
+//     const response = await axios.get(`https://www.virustotal.com/api/v3/ip_addresses/${ip}`, {
+//       headers: {
+//         'x-apikey': process.env.VIRUSTOTAL_API_KEY
+//       }
+//     });
+
+//     const attributes = response.data.data.attributes;
+
+//     // Optional: store in DB
+//     await IPScan.findOneAndUpdate(
+//       { ip },
+//       {
+//         ip,
+//         country: attributes.country,
+//         reputation: attributes.reputation,
+//         stats: attributes.last_analysis_stats,
+//         as_owner: attributes.as_owner,
+//         network: attributes.network,
+//         whois: attributes.whois || 'N/A',
+//         last_analysis_date: new Date(attributes.last_analysis_date * 1000)
+//       },
+//       { upsert: true, new: true }
+//     );
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'IP address report fetched successfully',
+//       data: response.data.data
+//     });
+//   } catch (error) {
+//     console.error('Error fetching IP report:', error.message);
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Failed to fetch IP report',
+//       error: error?.response?.data || error.message
+//     });
+//   }
+// };
+
+
+
 const scanIPAddress = async (req, res) => {
   const { ip } = req.params;
+
+  // Validate IP format first
+  const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  if (!ipRegex.test(ip)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid IP address format'
+    });
+  }
 
   try {
     const response = await axios.get(`https://www.virustotal.com/api/v3/ip_addresses/${ip}`, {
@@ -45,20 +101,44 @@ const scanIPAddress = async (req, res) => {
 
     const attributes = response.data.data.attributes;
 
-    // Optional: store in DB
+    // Safely handle dates
+    const safeDate = (timestamp) => {
+      if (!timestamp) return null;
+      try {
+        return new Date(timestamp * 1000);
+      } catch (e) {
+        console.error('Date conversion error:', e);
+        return null;
+      }
+    };
+
+    // Prepare update data
+    const updateData = {
+      ip,
+      country: attributes.country || null,
+      reputation: attributes.reputation || 0,
+      stats: attributes.last_analysis_stats || {},
+      as_owner: attributes.as_owner || null,
+      network: attributes.network || null,
+      whois: attributes.whois || null,
+      last_analysis_date: safeDate(attributes.last_analysis_date),
+      last_modification_date: safeDate(attributes.last_modification_date),
+      whois_date: safeDate(attributes.whois_date),
+      updatedAt: new Date() // Track when we last updated this record
+    };
+
+    // Remove null values to avoid overwriting existing data with null
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === null) {
+        delete updateData[key];
+      }
+    });
+
+    // Store in DB
     await IPScan.findOneAndUpdate(
       { ip },
-      {
-        ip,
-        country: attributes.country,
-        reputation: attributes.reputation,
-        stats: attributes.last_analysis_stats,
-        as_owner: attributes.as_owner,
-        network: attributes.network,
-        whois: attributes.whois || 'N/A',
-        last_analysis_date: new Date(attributes.last_analysis_date * 1000)
-      },
-      { upsert: true, new: true }
+      updateData,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
     return res.status(200).json({
@@ -68,14 +148,27 @@ const scanIPAddress = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching IP report:', error.message);
-    return res.status(500).json({
+    
+    // Handle different types of errors
+    let statusCode = 500;
+    let errorMessage = 'Failed to fetch IP report';
+    
+    if (error.response) {
+      // VirusTotal API error
+      statusCode = error.response.status;
+      errorMessage = error.response.data?.message || errorMessage;
+    } else if (error.request) {
+      // No response received
+      errorMessage = 'No response received from VirusTotal API';
+    }
+
+    return res.status(statusCode).json({
       success: false,
-      message: 'Failed to fetch IP report',
+      message: errorMessage,
       error: error?.response?.data || error.message
     });
   }
 };
-
 
 const downloadIPReportAsPDF = async (req, res) => {
   const { ip } = req.params;

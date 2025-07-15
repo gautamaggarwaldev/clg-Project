@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const toolOptions = [
   {
     title: 'Scan URL',
-    path: '/app/tools/scan-url', // ✅ Correct path
+    path: '/app/tools/scan-url', 
     description:
       'Analyze your URL using 70+ antivirus products and security tools to generate a threat score and context.',
   },
