@@ -2,7 +2,7 @@ import axios from "axios";
 import URLScan from "../schema/urlScanSchema.js";
 
 const scanUrlService = async (url, userId) => {
-  const submitRes = await axios.post(
+  const submitRes = await axios.post( 
     "https://www.virustotal.com/api/v3/urls",
     `url=${url}`,
     {

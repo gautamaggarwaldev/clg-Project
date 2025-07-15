@@ -81,6 +81,47 @@ const getMyScannedUrls = async (req, res) => {
 //   }
 // };
 
+// const getDetailedUrlReport = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const scan = await URLScan.findOne({ id });
+
+//     if (!scan) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Scan report not found for the given URL",
+//       });
+//     }
+
+//     const results = scan.scanResult?.attributes?.results || {};
+//     const scanEngineCount = Object.keys(results).length;
+
+//     res.status(200).json({
+//       success: true,
+//       data: {
+//         url: scan.url,
+//         timestamp: scan.createdAt,
+//         status: scan.scanResult?.attributes?.status || "unknown",
+//         stats: scan.scanResult?.attributes?.stats || {
+//           malicious: 0,
+//           suspicious: 0,
+//           undetected: 0,
+//           harmless: 0,
+//           timeout: 0,
+//         },
+//         results,
+//         scan_engine_count: scanEngineCount,
+//         virustotal_link:
+//           scan.scanResult?.links?.self ||
+//           `https://www.virustotal.com/gui/url/${scan.encodedUrl}`, // fallback if stored
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error fetching detailed report:", error.message);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
 const getDetailedUrlReport = async (req, res) => {
   try {
     const { id } = req.params;
@@ -94,7 +135,11 @@ const getDetailedUrlReport = async (req, res) => {
       });
     }
 
-    const results = scan.scanResult?.attributes?.results || {};
+    const attributes = scan.scanResult?.attributes || {};
+
+    const results =
+      attributes.last_analysis_results || attributes.results || {};
+
     const scanEngineCount = Object.keys(results).length;
 
     res.status(200).json({
@@ -102,8 +147,8 @@ const getDetailedUrlReport = async (req, res) => {
       data: {
         url: scan.url,
         timestamp: scan.createdAt,
-        status: scan.scanResult?.attributes?.status || "unknown",
-        stats: scan.scanResult?.attributes?.stats || {
+        status: attributes.status || "unknown",
+        stats: attributes.stats || {
           malicious: 0,
           suspicious: 0,
           undetected: 0,
@@ -114,7 +159,7 @@ const getDetailedUrlReport = async (req, res) => {
         scan_engine_count: scanEngineCount,
         virustotal_link:
           scan.scanResult?.links?.self ||
-          `https://www.virustotal.com/gui/url/${scan.encodedUrl}`, // fallback if stored
+          `https://www.virustotal.com/gui/url/${scan.encodedUrl}`,
       },
     });
   } catch (error) {
@@ -122,6 +167,7 @@ const getDetailedUrlReport = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
 export { scanUrl, getMyScannedUrls, getDetailedUrlReport };

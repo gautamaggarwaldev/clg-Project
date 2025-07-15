@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.post("/scan", protectUser, scanUrl);
 router.get("/scan-my-all", protectUser, getMyScannedUrls);
-router.get("/report/:url", getDetailedUrlReport);
+router.get("/report/:id", getDetailedUrlReport);
 
 export default router;

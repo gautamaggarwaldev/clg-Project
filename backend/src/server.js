@@ -3,6 +3,8 @@ import "../config/dbconfig.js";
 import cookieParser from "cookie-parser";
 import routes from "../src/routes/index.js";
 import cors from 'cors';
+import dotenv from "dotenv";
+dotenv.config();
 
 
 const app = express();
