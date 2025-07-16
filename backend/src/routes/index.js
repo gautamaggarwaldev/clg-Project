@@ -4,7 +4,8 @@ import urlScanRoute from "./urlScanRoutes.js";
 import fileScanRoute from "./fileScanRoutes.js";
 import ipScanRoute from "./ipScanRoutes.js";
 import domainRoute from "./domainRoutes.js";
-import aiRoute from "./aiRoutes.js"; 
+import aiRoute from "./aiRoutes.js";
+import chatRoute from "./chatRoutes.js";
 
 const router = express.Router();
 
@@ -32,6 +33,10 @@ const Routes = [
   {
     path: "/ai",
     route: aiRoute,
+  },
+  {
+    path: "/chat",
+    route: chatRoute,
   },
 ];
 

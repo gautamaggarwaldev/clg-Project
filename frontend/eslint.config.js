@@ -25,6 +25,7 @@ export default defineConfig([
     rules: {
       'no-unused-vars': "off",
       "no-prototype-builtins": 'off',
+      "no-useless-escape": 'off',
     },
   },
 ])

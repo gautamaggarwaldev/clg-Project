@@ -16,6 +16,7 @@ import DomainCheck from "./pages/DomainCheck";
 import IpCheck from "./pages/IpCheck";
 import FileUploadScan from "./pages/FileUploadScan";
 import HashReport from "./pages/HashReport";
+import AiChat from "./pages/AiChat";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/app/tools/ip-scan" element={<IpCheck />} />
         <Route path="/app/tools/file-upload" element={<FileUploadScan />} />
         <Route path="/app/tools/hash-report" element={<HashReport />} />
+        <Route path="/app/tools/ai-chat" element={<AiChat />} />
 
         <Route
           path="/app"
