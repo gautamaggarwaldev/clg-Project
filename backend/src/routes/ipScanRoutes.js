@@ -8,3 +8,4 @@ router.get('/report/:ip/pdf', downloadIPReportAsPDF);
 router.get('/history', getAllIPScanHistory);
 
 export default router;
+ 

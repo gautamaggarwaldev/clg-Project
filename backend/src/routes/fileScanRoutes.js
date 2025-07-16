@@ -40,3 +40,4 @@ router.get('/report/:scanId/pdf', downloadFileReportPDF);
 router.get('/hash-report/:hash', getReportByHash);
 
 export default router;
+ 

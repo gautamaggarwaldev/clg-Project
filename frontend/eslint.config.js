@@ -26,6 +26,7 @@ export default defineConfig([
       'no-unused-vars': "off",
       "no-prototype-builtins": 'off',
       "no-useless-escape": 'off',
+      // 'react-hooks/exhaustive-deps': 'off',
     },
   },
 ])
