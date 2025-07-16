@@ -6,7 +6,7 @@ import ipScanRoute from "./ipScanRoutes.js";
 import domainRoute from "./domainRoutes.js";
 import aiRoute from "./aiRoutes.js";
 import chatRoute from "./chatRoutes.js";
-
+import newsRoute from "./newsRoutes.js";
 const router = express.Router();
 
 const Routes = [
@@ -38,6 +38,10 @@ const Routes = [
     path: "/chat",
     route: chatRoute,
   },
+  {
+    path: "/news",
+    route: newsRoute,
+  }
 ];
 
 Routes.forEach((route) => {

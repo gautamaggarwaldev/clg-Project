@@ -29,6 +29,7 @@ const Sidebar = () => {
     { label: "Profile", path: "/app/profile" },
     { label: "Dashboard", path: "/app/dashboard" },
     { label: "Security Tools", path: "/app/tools" },
+    { label: "Cyber News", path: "/app/cyber-news" },
     { label: "About Us", path: "/app/about" },
     { label: "Contact Us", path: "/app/contact" },
   ];

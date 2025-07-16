@@ -17,6 +17,7 @@ import IpCheck from "./pages/IpCheck";
 import FileUploadScan from "./pages/FileUploadScan";
 import HashReport from "./pages/HashReport";
 import AiChat from "./pages/AiChat";
+import CyberNews from "./pages/CyberNews";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/app/tools/file-upload" element={<FileUploadScan />} />
         <Route path="/app/tools/hash-report" element={<HashReport />} />
         <Route path="/app/tools/ai-chat" element={<AiChat />} />
+        <Route path="/app/cyber-news" element={<CyberNews />} />
 
         <Route
           path="/app"
