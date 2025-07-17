@@ -33,6 +33,12 @@ const toolOptions = [
     description:
       "Retrieve file scan results using md5/sha1/sha256 hash, checked across antivirus and sandbox tools.",
   },
+  {
+    title: "Dark Web Email Scanner",
+    path: "/app/dark-web-scanner",
+    description:
+      "A Dark Web Scanner via Email detects and alerts users if their email appears in leaked or compromised data on the dark web.",
+  },
 ];
 
 const ChatBotIcon = () => {
@@ -43,12 +49,12 @@ const ChatBotIcon = () => {
     // Show popup every 10 seconds
     const interval = setInterval(() => {
       setShowPopup(true);
-      
+
       // Auto-hide after 8 seconds if not interacted with
       const timeout = setTimeout(() => {
         setShowPopup(false);
       }, 8000);
-      
+
       return () => clearTimeout(timeout);
     }, 10000);
 
@@ -69,7 +75,7 @@ const ChatBotIcon = () => {
     <div className="fixed bottom-6 right-6 z-50">
       {/* Popup Message */}
       {showPopup && (
-        <div 
+        <div
           className="absolute bottom-16 right-0 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 border border-gray-200 dark:border-gray-700 animate-bounce"
           onClick={(e) => e.stopPropagation()}
         >
@@ -77,7 +83,7 @@ const ChatBotIcon = () => {
             <h3 className="font-semibold text-gray-800 dark:text-white">
               Need help? 🛡️
             </h3>
-            <button 
+            <button
               onClick={handleClosePopup}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
@@ -147,7 +153,7 @@ const Tools = () => {
           </div>
         ))}
       </div>
-      
+
       {/* Enhanced Floating Chatbot Icon */}
       <ChatBotIcon />
     </div>

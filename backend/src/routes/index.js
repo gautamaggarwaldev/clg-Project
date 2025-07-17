@@ -7,6 +7,8 @@ import domainRoute from "./domainRoutes.js";
 import aiRoute from "./aiRoutes.js";
 import chatRoute from "./chatRoutes.js";
 import newsRoute from "./newsRoutes.js";
+import darkWebScannerRoute from "./darkWebScanner.js";
+
 const router = express.Router();
 
 const Routes = [
@@ -41,7 +43,11 @@ const Routes = [
   {
     path: "/news",
     route: newsRoute,
-  }
+  },
+  {
+    path: "/dark-web-scanner",
+    route: darkWebScannerRoute,
+  },
 ];
 
 Routes.forEach((route) => {

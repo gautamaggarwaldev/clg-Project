@@ -18,6 +18,7 @@ import FileUploadScan from "./pages/FileUploadScan";
 import HashReport from "./pages/HashReport";
 import AiChat from "./pages/AiChat";
 import CyberNews from "./pages/CyberNews";
+import DarkWebScanner from "./pages/DarkWebScanner";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/app/tools/hash-report" element={<HashReport />} />
         <Route path="/app/tools/ai-chat" element={<AiChat />} />
         <Route path="/app/cyber-news" element={<CyberNews />} />
+        <Route path="/app/dark-web-scanner" element={<DarkWebScanner />} />
 
         <Route
           path="/app"

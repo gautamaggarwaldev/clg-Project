@@ -1,4 +1,4 @@
 .env
 node_modules
 uploads
-uploads\chat-talk
+chat-talk
