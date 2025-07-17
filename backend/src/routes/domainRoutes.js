@@ -4,7 +4,6 @@ import {
   downloadDomainReportPDF,
   getDomainHistory,
 } from '../controller/domainController.js';
-
 const router = express.Router();
 
 router.get('/report/:domain', getDomainReport);

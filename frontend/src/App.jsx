@@ -28,14 +28,70 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/app/tools/scan-url" element={<ScanURL />} />
-        <Route path="/app/tools/domain-check" element={<DomainCheck />} />
-        <Route path="/app/tools/ip-scan" element={<IpCheck />} />
-        <Route path="/app/tools/file-upload" element={<FileUploadScan />} />
-        <Route path="/app/tools/hash-report" element={<HashReport />} />
-        <Route path="/app/tools/ai-chat" element={<AiChat />} />
-        <Route path="/app/cyber-news" element={<CyberNews />} />
-        <Route path="/app/dark-web-scanner" element={<DarkWebScanner />} />
+        <Route
+          path="/app/tools/scan-url"
+          element={
+            <PrivateRoute>
+              <ScanURL />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/tools/domain-check"
+          element={
+            <PrivateRoute>
+              <DomainCheck />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/tools/ip-scan"
+          element={
+            <PrivateRoute>
+              <IpCheck />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/tools/file-upload"
+          element={
+            <PrivateRoute>
+              <FileUploadScan />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/tools/hash-report"
+          element={
+            <PrivateRoute>
+              <HashReport />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/tools/ai-chat"
+          element={
+            <PrivateRoute>
+              <AiChat />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/cyber-news"
+          element={
+            <PrivateRoute>
+              <CyberNews />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/dark-web-scanner"
+          element={
+            <PrivateRoute>
+              <DarkWebScanner />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="/app"

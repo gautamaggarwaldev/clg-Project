@@ -6,9 +6,24 @@ const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setOpen(true); // Always show on desktop
+      }
+    };
+
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   // Load user info from localStorage
   useEffect(() => {
@@ -65,8 +80,8 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Floating Hamburger Button */}
-      {!open && (
+      {/* Floating Hamburger Button - Only shown on mobile when sidebar is closed */}
+      {isMobile && !open && (
         <motion.button
           onClick={() => setOpen(true)}
           className="md:hidden fixed top-4 left-4 z-50 bg-gradient-to-br from-cyan-500 to-blue-600 text-white p-3 rounded-full shadow-lg"
@@ -93,112 +108,127 @@ const Sidebar = () => {
         </motion.button>
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Always visible on desktop, conditionally on mobile */}
       <AnimatePresence>
-        {(open || window.innerWidth >= 768) && (
-          <motion.div
-            className={`fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white z-40 p-6 shadow-2xl`}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            variants={sidebarVariants}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
-            {/* Close Button on Mobile */}
-            <div className="flex justify-between items-center mb-8 md:hidden">
-              <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-                Navigation
-              </div>
-              <motion.button
-                onClick={() => setOpen(false)}
-                className="text-2xl hover:text-cyan-400"
-                whileHover={{ rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                &times;
-              </motion.button>
-            </div>
-
-            {/* User Profile */}
-            <motion.div 
-              className="mb-8 flex items-center gap-4 p-3 bg-gray-700 bg-opacity-50 rounded-xl"
-              whileHover={{ backgroundColor: "rgba(55, 65, 81, 0.7)" }}
-            >
+        {(!isMobile || open) && (
+          <>
+            {/* Overlay for mobile */}
+            {isMobile && open && (
               <motion.div
-                className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center rounded-full text-xl font-bold shadow-md"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-              >
-                {initial}
-              </motion.div>
-              <div>
-                <div className="font-semibold text-lg">{user?.name || "User"}</div>
-                <div className="text-sm text-gray-300">Premium Member</div>
-              </div>
-            </motion.div>
-
-            {/* Navigation */}
-            <nav className="flex flex-col gap-2">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.path}
-                  onHoverStart={() => setHoveredItem(index)}
-                  onHoverEnd={() => setHoveredItem(null)}
-                  variants={itemVariants}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link
-                    to={item.path}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                      location.pathname === item.path
-                        ? "bg-gradient-to-r from-cyan-600 to-blue-700 text-white shadow-md"
-                        : "hover:bg-gray-700"
-                    }`}
-                    onClick={() => setOpen(false)}
-                  >
-                    <motion.span
-                      animate={{
-                        scale: hoveredItem === index ? 1.2 : 1
-                      }}
-                      className="text-lg"
-                    >
-                      {item.icon}
-                    </motion.span>
-                    <span className="font-medium">{item.label}</span>
-                    {location.pathname === item.path && (
-                      <motion.div
-                        layoutId="activeItem"
-                        className="absolute right-4 w-2 h-2 bg-white rounded-full"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    )}
-                  </Link>
-                </motion.div>
-              ))}
-
-              {/* Logout Button */}
-              <motion.button
-                onClick={() => setShowLogoutModal(true)}
-                className="mt-6 flex items-center gap-3 p-3 text-left rounded-lg hover:bg-red-900 hover:bg-opacity-50 transition-all group"
-                whileHover={{ x: 5 }}
-              >
-                <span className="text-lg group-hover:animate-pulse">🚪</span>
-                <span className="font-medium">Logout</span>
-              </motion.button>
-            </nav>
-
-            {/* Footer */}
-            <motion.div 
-              className="absolute bottom-4 left-0 right-0 px-6 text-center text-xs text-gray-400"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+                className="fixed inset-0 bg-black bg-opacity-50 z-30"
+                onClick={() => setOpen(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              />
+            )}
+            
+            <motion.div
+              className={`fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white z-40 p-6 shadow-2xl`}
+              initial={isMobile ? "closed" : "open"}
+              animate="open"
+              exit={isMobile ? "closed" : "open"}
+              variants={sidebarVariants}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              © {new Date().getFullYear()} Security App
+              {/* Close Button on Mobile */}
+              {isMobile && (
+                <div className="flex justify-between items-center mb-8">
+                  <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+                    Navigation
+                  </div>
+                  <motion.button
+                    onClick={() => setOpen(false)}
+                    className="text-2xl hover:text-cyan-400"
+                    whileHover={{ rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    &times;
+                  </motion.button>
+                </div>
+              )}
+
+              {/* User Profile */}
+              <motion.div 
+                className="mb-8 flex items-center gap-4 p-3 bg-gray-700 bg-opacity-50 rounded-xl"
+                whileHover={{ backgroundColor: "rgba(55, 65, 81, 0.7)" }}
+              >
+                <motion.div
+                  className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center rounded-full text-xl font-bold shadow-md"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {initial}
+                </motion.div>
+                <div>
+                  <div className="font-semibold text-lg">{user?.name || "User"}</div>
+                  <div className="text-sm text-gray-300">Premium Member</div>
+                </div>
+              </motion.div>
+
+              {/* Navigation */}
+              <nav className="flex flex-col gap-2">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.path}
+                    onHoverStart={() => setHoveredItem(index)}
+                    onHoverEnd={() => setHoveredItem(null)}
+                    variants={itemVariants}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Link
+                      to={item.path}
+                      className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                        location.pathname === item.path
+                          ? "bg-gradient-to-r from-cyan-600 to-blue-700 text-white shadow-md"
+                          : "hover:bg-gray-700"
+                      }`}
+                      onClick={() => isMobile && setOpen(false)}
+                    >
+                      <motion.span
+                        animate={{
+                          scale: hoveredItem === index ? 1.2 : 1
+                        }}
+                        className="text-lg"
+                      >
+                        {item.icon}
+                      </motion.span>
+                      <span className="font-medium">{item.label}</span>
+                      {location.pathname === item.path && (
+                        <motion.div
+                          layoutId="activeItem"
+                          className="absolute right-4 w-2 h-2 bg-white rounded-full"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
+
+                {/* Logout Button */}
+                <motion.button
+                  onClick={() => setShowLogoutModal(true)}
+                  className="mt-6 flex items-center gap-3 p-3 text-left rounded-lg hover:bg-red-900 hover:bg-opacity-50 transition-all group"
+                  whileHover={{ x: 5 }}
+                >
+                  <span className="text-lg group-hover:animate-pulse">🚪</span>
+                  <span className="font-medium">Logout</span>
+                </motion.button>
+              </nav>
+
+              {/* Footer */}
+              <motion.div 
+                className="absolute bottom-4 left-0 right-0 px-6 text-center text-xs text-gray-400"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                © {new Date().getFullYear()} Security App
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
 
