@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, Cpu, Activity, BarChart2, Server, Globe, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const Home = () => {
   // Animation variants
@@ -15,6 +17,9 @@ const Home = () => {
       }
     }
   };
+
+  const navigate = useNavigate();
+
 
   const item = {
     hidden: { y: 20, opacity: 0 },
@@ -182,13 +187,13 @@ const Home = () => {
 
             <motion.div variants={item} className="flex flex-col sm:flex-row justify-center gap-4 mb-20">
               <Link
-                to="/register"
+                onClick={() => navigate('/register')}
                 className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg text-white font-medium shadow-lg hover:shadow-xl transition-all"
               >
                 Get Protected Now
               </Link>
               <Link
-                to="/login"
+                 onClick={() => navigate('/login')}
                 className="px-8 py-4 bg-transparent border border-cyan-500/50 hover:bg-cyan-900/30 text-cyan-400 rounded-lg font-medium hover:shadow-lg transition-all"
               >
                 Existing User? Login
