@@ -8,6 +8,7 @@ import aiRoute from "./aiRoutes.js";
 import chatRoute from "./chatRoutes.js";
 import newsRoute from "./newsRoutes.js";
 import darkWebScannerRoute from "./darkWebScanner.js";
+import contactRoute from "./contactRoutes.js";
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ const Routes = [
   {
     path: "/dark-web-scanner",
     route: darkWebScannerRoute,
+  },
+  {
+    path: "/contact",
+    route: contactRoute,
   },
 ];
 
