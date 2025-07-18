@@ -175,14 +175,6 @@ const ToolCard = ({ tool, onClick }) => {
         </div>
         <p className="text-sm text-white/80">{tool.description}</p>
       </div>
-      
-      <motion.div 
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        className="absolute inset-0 flex items-center justify-center bg-black/80 p-4"
-      >
-        <p className="text-white text-sm text-center">{tool.description}</p>
-      </motion.div>
     </motion.div>
   );
 };
