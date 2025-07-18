@@ -1,4 +1,74 @@
 @import "tailwindcss";
+
+/* Critical fixes for navigation */
+a, button, [role="button"] {
+  position: relative !important;
+  z-index: 30 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Ensure all links are clickable */
+a[href] {
+  display: inline-block;
+  z-index: 30 !important;
+  pointer-events: auto !important;
+}
+
+/* Fix for React Router Links */
+.react-router-link {
+  position: relative !important;
+  z-index: 30 !important;
+  pointer-events: auto !important;
+}
+
+/* Disable pointer events on decorative/background elements */
+.motion-div,
+.decorative,
+[class*="absolute"][class*="bg-gradient"],
+[class*="absolute"][class*="blur"],
+.pointer-events-none {
+  pointer-events: none !important;
+}
+
+/* Ensure motion elements don't interfere with navigation */
+.framer-motion > * {
+  pointer-events: auto;
+}
+
+.framer-motion[class*="absolute"] {
+  pointer-events: none !important;
+}
+
+/* Background animations should not interfere */
+.bg-animation {
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+/* Loading overlay fix */
+.loading-overlay {
+  pointer-events: none !important;
+}
+
+/* Hero section navigation area */
+.hero-navigation {
+  position: relative;
+  z-index: 40 !important;
+}
+
+.hero-navigation a {
+  position: relative;
+  z-index: 41 !important;
+  pointer-events: auto !important;
+}
+
+/* Animation fixes */
+.motion-div {
+  pointer-events: none;
+}
+
+/* Keyframes */
 @keyframes pulse-opacity {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
@@ -7,7 +77,8 @@
 .animate-pulse-opacity {
   animation: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
-/* Typography enhancements */
+
+/* Typography */
 pre code {
   display: block;
   overflow-x: auto;
@@ -18,7 +89,7 @@ code {
   font-family: 'Fira Code', 'Courier New', monospace;
 }
 
-/* Beautiful scrollbar for code blocks */
+/* Scrollbars */
 pre::-webkit-scrollbar {
   height: 6px;
 }
@@ -37,15 +108,88 @@ pre::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* List styling */
+/* Layout */
 .flex.items-start {
   align-items: flex-start;
 }
 
-/* Responsive text sizes */
+/* Text sizes */
 .text-6xl { font-size: 3.75rem; line-height: 1; }
 .text-5xl { font-size: 3rem; line-height: 1; }
 .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
 .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
 .text-2xl { font-size: 1.5rem; line-height: 2rem; }
 .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+
+/* Z-index layer system */
+.z-background { z-index: 1; }
+.z-content { z-index: 10; }
+.z-navigation { z-index: 30; }
+.z-overlay { z-index: 40; }
+.z-modal { z-index: 50; }
+
+/* Ensure interactive elements are always on top */
+.interactive {
+  position: relative;
+  z-index: 30 !important;
+  pointer-events: auto !important;
+}
+
+/* Button hover states */
+a:hover, button:hover {
+  z-index: 31 !important;
+}
+
+/* Disable pointer events on all absolute positioned decorative elements */
+.absolute:not(a):not(button):not([role="button"]) {
+  pointer-events: none !important;
+}
+
+/* Re-enable pointer events for interactive absolute elements */
+.absolute.interactive,
+.absolute a,
+.absolute button,
+.absolute [role="button"] {
+  pointer-events: auto !important;
+}
+
+/* Navigation button specific styles */
+.nav-button {
+  position: relative !important;
+  z-index: 35 !important;
+  pointer-events: auto !important;
+  display: inline-block !important;
+  cursor: pointer !important;
+}
+
+.nav-button:hover {
+  z-index: 36 !important;
+}
+
+/* Ensure motion components don't block clicks */
+[data-framer-component] {
+  pointer-events: auto;
+}
+
+[data-framer-component].background,
+[data-framer-component].decorative {
+  pointer-events: none !important;
+}
+
+/* Fix for touch devices */
+@media (hover: none) and (pointer: coarse) {
+  a, button {
+    z-index: 40 !important;
+  }
+}
+
+/* Debug styles (remove in production) */
+.debug-clickable {
+  outline: 2px solid red !important;
+  outline-offset: 2px;
+}
+
+.debug-blocked {
+  outline: 2px solid blue !important;
+  outline-offset: 2px;
+}
