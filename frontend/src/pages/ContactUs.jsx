@@ -17,7 +17,8 @@ const ContactUs = () => {
     setIsSubmitting(true);
     
     try {
-      await axios.post('http://localhost:5005/v1/contact/team', form);
+      // await axios.post('http://localhost:5005/v1/contact/team', form);
+      await axios.post('https://cs-qhmx.onrender.com/v1/contact/team', form);
       toast.success('Your message has been sent successfully!', {
         position: "top-center",
         autoClose: 5000,

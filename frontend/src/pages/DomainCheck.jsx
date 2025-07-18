@@ -90,7 +90,8 @@ const DomainCheck = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `http://localhost:5005/v1/domain/report/${domain}`
+        // `http://localhost:5005/v1/domain/report/${domain}`
+        `https://cs-qhmx.onrender.com/v1/domain/report/${domain}`
       );
       if (data.success) {
         const stats =

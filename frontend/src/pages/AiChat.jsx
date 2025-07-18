@@ -86,7 +86,8 @@ const AiChat = () => {
       }
 
       const { data } = await axios.post(
-        "http://localhost:5005/v1/chat/talk",
+        // "http://localhost:5005/v1/chat/talk",
+        "https://cs-qhmx.onrender.com/v1/chat/talk",
         formData,
         {
           headers: {

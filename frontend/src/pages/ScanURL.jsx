@@ -26,7 +26,8 @@ const ScanURL = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5005/v1/url/scan",
+        // "http://localhost:5005/v1/url/scan",
+        "https://cs-qhmx.onrender.com/v1/url/scan",
         { url },
         {
           headers: {
