@@ -1,5 +1,5 @@
 import express from 'express';
-import "../config/dbconfig.js";
+import "../config/dbConfig.js";
 import cookieParser from "cookie-parser";
 import routes from "../src/routes/index.js";
 import cors from 'cors';
