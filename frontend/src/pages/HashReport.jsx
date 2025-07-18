@@ -5,6 +5,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
 import { useDropzone } from "react-dropzone";
+import { motion, AnimatePresence } from "framer-motion";
 
 const HashReport = () => {
   const [file, setFile] = useState(null);
@@ -50,7 +51,7 @@ const HashReport = () => {
       const sha1 = CryptoJS.SHA1(wordArray).toString();
       const sha256 = CryptoJS.SHA256(wordArray).toString();
       setHashes({ md5, sha1, sha256 });
-      setHashInput(sha256); // Auto-fill the hash input with SHA-256
+      setHashInput(sha256);
       toast.success("Hashes calculated successfully!");
     };
     reader.readAsArrayBuffer(file);
@@ -67,14 +68,12 @@ const HashReport = () => {
       );
 
       if (data.data.status === "queued") {
-        // File was submitted for analysis
         toast.success("File submitted for analysis. Please check back later.");
         setReport({
           status: "queued",
           analysis_id: data.data.analysis_id,
         });
       } else {
-        // Report exists
         setReport(data.data);
         toast.success("Report fetched successfully!");
       }
@@ -84,6 +83,7 @@ const HashReport = () => {
       setLoading(false);
     }
   };
+
   const calculateRisk = (stats) => {
     if (!stats) return 0;
     const total = Object.values(stats).reduce((a, b) => a + b, 0);
@@ -92,10 +92,10 @@ const HashReport = () => {
   };
 
   const getRiskColor = (riskPercentage) => {
-    if (riskPercentage === 0) return "bg-green-500";
-    if (riskPercentage <= 30) return "bg-yellow-500";
-    if (riskPercentage <= 70) return "bg-orange-500";
-    return "bg-red-500";
+    if (riskPercentage === 0) return "from-green-400 to-green-600";
+    if (riskPercentage <= 30) return "from-yellow-400 to-yellow-600";
+    if (riskPercentage <= 70) return "from-orange-500 to-orange-600";
+    return "from-red-500 to-red-700";
   };
 
   const getRiskLevel = (riskPercentage) => {
@@ -107,13 +107,10 @@ const HashReport = () => {
 
   const generatePDF = () => {
     const doc = new jsPDF();
-
-    // Title
     doc.setFontSize(22);
     doc.setTextColor(40);
     doc.text("File Hash Scan Report", 20, 20);
 
-    // File Info
     doc.setFontSize(14);
     doc.text("File Information:", 20, 40);
     autoTable(doc, {
@@ -128,7 +125,6 @@ const HashReport = () => {
       ],
     });
 
-    // Scan Results Summary
     doc.setFontSize(14);
     doc.text("Scan Results Summary:", 20, doc.lastAutoTable.finalY + 15);
     autoTable(doc, {
@@ -137,7 +133,6 @@ const HashReport = () => {
       body: Object.entries(report.status || {}).map(([key, val]) => [key, val]),
     });
 
-    // Risk Assessment
     const riskPercentage = calculateRisk(report.status);
     doc.setFontSize(14);
     doc.text(
@@ -146,7 +141,6 @@ const HashReport = () => {
       doc.lastAutoTable.finalY + 15
     );
 
-    // Detailed Results
     doc.setFontSize(14);
     doc.text("Detailed Scan Results:", 20, doc.lastAutoTable.finalY + 25);
     autoTable(doc, {
@@ -170,12 +164,9 @@ const HashReport = () => {
       styles: { fontSize: 8 },
     });
 
-    // Watermark and footer
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-
-      // Watermark
       doc.setFontSize(40);
       doc.setTextColor(200);
       doc.setGState(new doc.GState({ opacity: 0.4 }));
@@ -186,8 +177,6 @@ const HashReport = () => {
         { angle: 45, align: "center" }
       );
       doc.setGState(new doc.GState({ opacity: 1 }));
-
-      // Footer
       doc.setFontSize(10);
       doc.setTextColor(80, 80, 80);
       doc.text(
@@ -218,14 +207,16 @@ const HashReport = () => {
     ];
 
     return (
-      <div className="w-full h-6 bg-gray-200 rounded overflow-hidden flex">
+      <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden flex">
         {categories.map((cat) => (
-          <div
+          <motion.div
             key={cat.name}
-            className={`${cat.color} h-6`}
-            style={{
+            initial={{ width: 0 }}
+            animate={{
               width: `${(report.status[cat.name] / total) * 100}%`,
             }}
+            transition={{ duration: 1 }}
+            className={`${cat.color} h-3`}
             title={`${cat.name}: ${report.status[cat.name]}`}
           />
         ))}
@@ -234,294 +225,437 @@ const HashReport = () => {
   };
 
   return (
-    <div className="p-6 bg-[#0B1120] text-white min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-cyan-400">
-        File Hash Scanner & Report
-      </h1>
-
-      {/* File Upload Section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-3 text-cyan-300">
-          Upload File to Generate Hash
-        </h2>
-
-        {/* Drag and Drop Area */}
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer mb-4 ${
-            isDragActive ? "border-cyan-500 bg-[#1E293B]" : "border-gray-600"
-          }`}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 text-white p-6"
+    >
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="mb-8 text-center"
         >
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <p className="text-cyan-400">Drop the file here...</p>
-          ) : (
-            <div>
-              <p className="mb-2">
-                Drag & drop a file here, or click to select
-              </p>
-              <p className="text-sm text-gray-400">
-                Supported formats: PDF, DOCX, CSV
-              </p>
-            </div>
-          )}
-        </div>
+          <h1 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+            File Hash Scanner & Report
+          </h1>
+          <p className="text-gray-300 max-w-2xl mx-auto">
+            Upload files to generate hashes or scan existing hashes for security threats
+          </p>
+        </motion.div>
 
-        {/* Or traditional file input */}
-        <div className="text-center mb-4">
-          <span className="text-gray-400">or</span>
-        </div>
+        {/* File Upload Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <h2 className="text-xl font-semibold mb-4 text-cyan-300">
+            Upload File to Generate Hash
+          </h2>
 
-        <div className="flex justify-center">
-          <label className="bg-[#1E293B] hover:bg-[#334155] px-4 py-2 rounded cursor-pointer">
-            Select File
-            <input
-              type="file"
-              accept=".pdf,.docx,.csv"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </label>
-        </div>
-
-        {/* Hash Display */}
-        {hashes.md5 && (
-          <div className="mt-6 bg-[#1E293B] p-4 rounded-lg">
-            <h3 className="font-semibold text-cyan-300 mb-2">File Hashes:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-              <div>
-                <span className="font-bold text-gray-300">MD5:</span>
-                <p className="break-all">{hashes.md5}</p>
-              </div>
-              <div>
-                <span className="font-bold text-gray-300">SHA-1:</span>
-                <p className="break-all">{hashes.sha1}</p>
-              </div>
-              <div>
-                <span className="font-bold text-gray-300">SHA-256:</span>
-                <p className="break-all">{hashes.sha256}</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Hash Input Section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-3 text-cyan-300">
-          Scan File by Hash
-        </h2>
-        <div className="flex flex-col md:flex-row gap-4 mb-4">
-          <input
-            type="text"
-            value={hashInput}
-            onChange={(e) => setHashInput(e.target.value)}
-            placeholder="Enter SHA-256, MD5, or SHA-1 hash..."
-            className="flex-grow p-3 rounded bg-[#1E293B] border border-cyan-500 focus:border-cyan-300 focus:outline-none"
-          />
-          <button
-            onClick={fetchReport}
-            disabled={loading}
-            className="bg-cyan-600 hover:bg-cyan-700 px-6 py-3 rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          {/* Drag and Drop Area */}
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer mb-4 transition-all ${
+              isDragActive
+                ? "border-cyan-500 bg-cyan-900/10"
+                : "border-gray-600 hover:border-cyan-400 hover:bg-gray-800/30"
+            }`}
           >
-            {loading ? (
-              <span className="flex items-center justify-center">
+            <input {...getInputProps()} />
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                className="p-3 bg-cyan-900/20 rounded-full"
+              >
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-10 h-10 text-cyan-400"
                   fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
                   <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                   ></path>
                 </svg>
-                Scanning...
-              </span>
-            ) : (
-              "Scan Hash"
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Scan Results */}
-      {report && (
-        <div className="bg-[#1E293B] p-6 rounded-xl border border-cyan-700 shadow-lg">
-          <div className="flex justify-between items-start mb-6">
-            <h2 className="text-2xl text-cyan-300">Scan Results</h2>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDetails(!showDetails)}
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm"
-              >
-                {showDetails ? "Hide Details" : "Show Details"}
-              </button>
-              <button
-                onClick={generatePDF}
-                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm"
-              >
-                Download PDF
-              </button>
-            </div>
-          </div>
-
-          {/* Risk Level */}
-          <div className="mb-6">
-            <div className="flex justify-between mb-1">
-              <span className="font-medium">Risk Assessment</span>
-              <span className="font-semibold">
-                {calculateRisk(report.status)}% -{" "}
-                {getRiskLevel(calculateRisk(report.status))}
-              </span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-2.5">
-              <div
-                className={`h-2.5 rounded-full ${getRiskColor(
-                  calculateRisk(report.status)
-                )}`}
-                style={{ width: `${calculateRisk(report.status)}%` }}
-              ></div>
-            </div>
-          </div>
-
-          {/* Stats Visualization */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-2">Detection Breakdown</h3>
-            {renderStatsBar()}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-red-600 rounded-full mr-2"></div>
-                <span>Malicious: {report.status.malicious || 0}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
-                <span>Suspicious: {report.status.suspicious || 0}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span>Harmless: {report.status.harmless || 0}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-                <span>Undetected: {report.status.undetected || 0}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
-                <span>Timeout: {report.status.timeout || 0}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
-                <span>Failure: {report.status.failure || 0}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
-                <span>
-                  Unsupported: {report.status["type-unsupported"] || 0}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* File Info */}
-          <div className="mb-6 bg-[#0F172A] p-4 rounded-lg">
-            <h3 className="font-semibold text-cyan-300 mb-2">
-              File Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-gray-400">SHA-256</p>
-                <p className="break-all">{report.file_info.sha256}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">MD5</p>
-                <p className="break-all">{report.file_info.md5}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">SHA-1</p>
-                <p className="break-all">{report.file_info.sha1}</p>
-              </div>
-              {file && (
-                <div className="md:col-span-3">
-                  <p className="text-sm text-gray-400">File Name</p>
-                  <p>{file.name}</p>
-                </div>
+              </motion.div>
+              {isDragActive ? (
+                <p className="text-cyan-400">Drop the file here...</p>
+              ) : (
+                <>
+                  <p className="text-gray-300">
+                    Drag & drop a file here, or click to select
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    Supported formats: PDF, DOCX, CSV
+                  </p>
+                </>
               )}
             </div>
           </div>
 
-          {/* Detailed Results */}
-          {showDetails && (
-            <div className="mt-6">
-              <h3 className="font-semibold text-cyan-300 mb-3">
-                Detailed Scan Results
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-[#0F172A] rounded-lg overflow-hidden">
-                  <thead className="bg-[#1E293B]">
-                    <tr>
-                      <th className="px-4 py-2 text-left">Engine</th>
-                      <th className="px-4 py-2 text-left">Category</th>
-                      <th className="px-4 py-2 text-left">Result</th>
-                      <th className="px-4 py-2 text-left">Version</th>
-                      <th className="px-4 py-2 text-left">Update</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1E293B]">
-                    {Object.entries(report.results || {}).map(
-                      ([engine, info]) => (
-                        <tr key={engine} className="hover:bg-[#1E293B]">
-                          <td className="px-4 py-2">{engine}</td>
-                          <td className="px-4 py-2">
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                info.category === "malicious"
-                                  ? "bg-red-100 text-red-800"
-                                  : info.category === "suspicious"
-                                  ? "bg-orange-100 text-orange-800"
-                                  : info.category === "harmless"
-                                  ? "bg-green-100 text-green-800"
-                                  : info.category === "undetected"
-                                  ? "bg-gray-100 text-gray-800"
-                                  : info.category === "timeout"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : info.category === "failure"
-                                  ? "bg-purple-100 text-purple-800"
-                                  : "bg-blue-100 text-blue-800"
-                              }`}
-                            >
-                              {info.category}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2">{info.result || "N/A"}</td>
-                          <td className="px-4 py-2">
-                            {info.engine_version || "N/A"}
-                          </td>
-                          <td className="px-4 py-2">
-                            {info.engine_update || "N/A"}
-                          </td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
+          {/* Or traditional file input */}
+          <div className="flex justify-center mb-6">
+            <motion.label
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer shadow-lg"
+            >
+              Browse Files
+              <input
+                type="file"
+                accept=".pdf,.docx,.csv"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </motion.label>
+          </div>
+
+          {/* Hash Display */}
+          {hashes.md5 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700"
+            >
+              <h3 className="font-semibold text-cyan-300 mb-3">File Hashes:</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-700/50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-400 font-medium">MD5</p>
+                  <p className="break-all font-mono text-sm">{hashes.md5}</p>
+                </div>
+                <div className="bg-gray-700/50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-400 font-medium">SHA-1</p>
+                  <p className="break-all font-mono text-sm">{hashes.sha1}</p>
+                </div>
+                <div className="bg-gray-700/50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-400 font-medium">SHA-256</p>
+                  <p className="break-all font-mono text-sm">{hashes.sha256}</p>
+                </div>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
-      )}
-      
-    </div>
+        </motion.div>
+
+        {/* Hash Input Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8"
+        >
+          <h2 className="text-xl font-semibold mb-4 text-cyan-300">
+            Scan File by Hash
+          </h2>
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <input
+              type="text"
+              value={hashInput}
+              onChange={(e) => setHashInput(e.target.value)}
+              placeholder="Enter SHA-256, MD5, or SHA-1 hash..."
+              className="flex-grow p-4 rounded-lg bg-gray-800 border border-cyan-500/50 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/20 focus:outline-none transition-all"
+            />
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={fetchReport}
+              disabled={loading}
+              className={`px-6 py-4 rounded-lg font-medium shadow-lg transition-all ${
+                loading
+                  ? "bg-gray-600 cursor-not-allowed"
+                  : "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700"
+              }`}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Scanning...
+                </span>
+              ) : (
+                "Scan Hash"
+              )}
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* Scan Results */}
+        <AnimatePresence>
+          {report && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="bg-gray-800/70 backdrop-blur-lg rounded-2xl border border-cyan-500/30 shadow-xl overflow-hidden mb-8"
+            >
+              <div className="p-6 md:p-8">
+                {/* Report Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">
+                      Scan Results
+                    </h2>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Scanned on {new Date(report.date).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 mt-4 md:mt-0">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setShowDetails(!showDetails)}
+                      className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-all flex items-center gap-2"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {showDetails ? "Hide Details" : "Show Details"}
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={generatePDF}
+                      className="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-all flex items-center gap-2"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Download PDF
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Risk Level */}
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-lg font-semibold">Risk Assessment</h3>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r ${getRiskColor(
+                        calculateRisk(report.status)
+                      )}`}
+                    >
+                      {calculateRisk(report.status)}% -{" "}
+                      {getRiskLevel(calculateRisk(report.status))}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{
+                        width: `${calculateRisk(report.status)}%`,
+                      }}
+                      transition={{ duration: 1 }}
+                      className={`h-full rounded-full bg-gradient-to-r ${getRiskColor(
+                        calculateRisk(report.status)
+                      )}`}
+                    />
+                  </div>
+                </div>
+
+                {/* Stats Visualization */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3">
+                    Detection Breakdown
+                  </h3>
+                  {renderStatsBar()}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-sm">
+                    {[
+                      { name: "malicious", color: "bg-red-600" },
+                      { name: "suspicious", color: "bg-orange-500" },
+                      { name: "harmless", color: "bg-green-500" },
+                      { name: "undetected", color: "bg-gray-400" },
+                      { name: "timeout", color: "bg-yellow-400" },
+                      { name: "failure", color: "bg-purple-500" },
+                      { name: "type-unsupported", color: "bg-blue-400" },
+                    ].map((cat) => (
+                      <div
+                        key={cat.name}
+                        className="flex items-center space-x-2"
+                      >
+                        <div
+                          className={`w-3 h-3 rounded-full ${cat.color}`}
+                        ></div>
+                        <span className="capitalize">
+                          {cat.name.replace("-", " ")}:{" "}
+                          {report.status[cat.name] || 0}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* File Info */}
+                <div className="mb-6 bg-gray-700/30 p-6 rounded-xl border border-gray-600">
+                  <h3 className="text-xl font-semibold mb-3 text-cyan-300">
+                    File Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-400">SHA-256</p>
+                      <p className="break-all font-mono text-sm">
+                        {report.file_info.sha256}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">MD5</p>
+                      <p className="break-all font-mono text-sm">
+                        {report.file_info.md5}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">SHA-1</p>
+                      <p className="break-all font-mono text-sm">
+                        {report.file_info.sha1}
+                      </p>
+                    </div>
+                    {file && (
+                      <div className="md:col-span-3">
+                        <p className="text-sm text-gray-400">File Name</p>
+                        <p>{file.name}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Detailed Results */}
+                <AnimatePresence>
+                  {showDetails && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-6 pt-6 border-t border-gray-700">
+                        <h3 className="text-xl font-semibold mb-4 text-cyan-300">
+                          Detailed Scan Results
+                        </h3>
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-700">
+                            <thead className="bg-gray-700/50">
+                              <tr>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">
+                                  Engine
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">
+                                  Category
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">
+                                  Result
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">
+                                  Version
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">
+                                  Update
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-gray-800/50 divide-y divide-gray-700">
+                              {Object.entries(report.results || {}).map(
+                                ([engine, info]) => (
+                                  <motion.tr
+                                    key={engine}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="hover:bg-gray-700/30"
+                                  >
+                                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-200">
+                                      {engine}
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-sm">
+                                      <span
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                          info.category === "malicious"
+                                            ? "bg-red-900 text-red-200"
+                                            : info.category === "suspicious"
+                                            ? "bg-orange-900 text-orange-200"
+                                            : info.category === "harmless"
+                                            ? "bg-green-900 text-green-200"
+                                            : info.category === "undetected"
+                                            ? "bg-gray-700 text-gray-300"
+                                            : info.category === "timeout"
+                                            ? "bg-yellow-900 text-yellow-200"
+                                            : info.category === "failure"
+                                            ? "bg-purple-900 text-purple-200"
+                                            : "bg-blue-900 text-blue-200"
+                                        }`}
+                                      >
+                                        {info.category}
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-gray-300">
+                                      {info.result || "N/A"}
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-gray-300">
+                                      {info.engine_version || "N/A"}
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-gray-300">
+                                      {info.engine_update || "N/A"}
+                                    </td>
+                                  </motion.tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
 

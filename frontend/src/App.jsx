@@ -19,6 +19,8 @@ import HashReport from "./pages/HashReport";
 import AiChat from "./pages/AiChat";
 import CyberNews from "./pages/CyberNews";
 import DarkWebScanner from "./pages/DarkWebScanner";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -92,6 +94,8 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password/:token" element={<ResetPassword />} />
 
         <Route
           path="/app"
