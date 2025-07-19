@@ -100,7 +100,8 @@ const DomainCheck = () => {
       const cleanDomain = domain.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
       console.log("Clean domain:", cleanDomain); // Debug log
 
-      const apiUrl = `http://localhost:5005/v1/domain/report/${cleanDomain}`;
+      // const apiUrl = `http://localhost:5005/v1/domain/report/${cleanDomain}`; 
+      const apiUrl = `https://cs-qhmx.onrender.com/v1/domain/report/${cleanDomain}`; 
       console.log("API URL:", apiUrl); // Debug log
 
       const { data } = await axios.get(apiUrl, {
