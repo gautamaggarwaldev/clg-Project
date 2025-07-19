@@ -99,6 +99,28 @@ const Home = () => {
     },
   ];
 
+  // Generate network nodes
+  const networkNodes = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 6 + 2,
+    delay: Math.random() * 2,
+  }));
+
+  // Generate matrix characters
+  const matrixChars =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const matrixColumns = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: (i * 100) / 20,
+    chars: Array.from(
+      { length: 15 },
+      () => matrixChars[Math.floor(Math.random() * matrixChars.length)]
+    ),
+    delay: Math.random() * 5,
+  }));
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTextIndex((prevIndex) =>
@@ -142,33 +164,245 @@ const Home = () => {
         />
       </motion.div>
 
-      {/* Background elements - Fixed z-index and pointer-events */}
-      <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(40)].map((_, i) => (
+      {/* Enhanced Background Animations */}
+      <div
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+        style={{ zIndex: 1 }}
+      >
+        {/* Radar Sweep Animation */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-96 h-96 border-2 border-cyan-500/20 rounded-full pointer-events-none"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        >
           <motion.div
-            key={i}
-            className="absolute rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent rounded-full pointer-events-none"
             style={{
-              width: Math.random() * 12 + 3,
-              height: Math.random() * 12 + 3,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              pointerEvents: "none",
+              clipPath: "polygon(50% 50%, 50% 0%, 60% 0%, 50% 50%)",
+            }}
+          />
+        </motion.div>
+
+        {/* Signal Wave Rings */}
+        {[...Array(4)].map((_, i) => (
+          <motion.div
+            key={`ring-${i}`}
+            className="absolute top-1/2 right-1/4 w-64 h-64 border border-blue-500/20 rounded-full pointer-events-none"
+            style={{
+              transform: "translate(50%, -50%)",
             }}
             animate={{
-              y: [0, (Math.random() - 0.5) * 120],
-              x: [0, (Math.random() - 0.5) * 120],
-              opacity: [0.3, 0.9, 0.3],
-              scale: [1, 1.2, 1],
+              scale: [1, 2.5, 1],
+              opacity: [0.7, 0, 0.7],
             }}
             transition={{
-              duration: Math.random() * 20 + 15,
+              duration: 3,
               repeat: Infinity,
-              repeatType: "reverse",
+              delay: i * 0.7,
+              ease: "easeOut",
+            }}
+          />
+        ))}
+
+        {/* Network Connection Lines */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ zIndex: 2 }}
+        >
+          {networkNodes.map((node, i) =>
+            networkNodes.slice(i + 1).map((targetNode, j) => {
+              const distance = Math.sqrt(
+                Math.pow(node.x - targetNode.x, 2) +
+                  Math.pow(node.y - targetNode.y, 2)
+              );
+              if (distance < 30) {
+                return (
+                  <motion.line
+                    key={`line-${i}-${j}`}
+                    x1={`${node.x}%`}
+                    y1={`${node.y}%`}
+                    x2={`${targetNode.x}%`}
+                    y2={`${targetNode.y}%`}
+                    stroke="url(#lineGradient)"
+                    strokeWidth="1"
+                    className="pointer-events-none"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{
+                      pathLength: 1,
+                      opacity: [0, 0.6, 0],
+                    }}
+                    transition={{
+                      pathLength: { duration: 2, delay: node.delay },
+                      opacity: {
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: node.delay,
+                      },
+                    }}
+                  />
+                );
+              }
+              return null;
+            })
+          )}
+
+          {/* Gradient definitions */}
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(6, 182, 212, 0)" />
+              <stop offset="50%" stopColor="rgba(6, 182, 212, 0.8)" />
+              <stop offset="100%" stopColor="rgba(6, 182, 212, 0)" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        {/* Network Nodes */}
+        {networkNodes.map((node) => (
+          <motion.div
+            key={node.id}
+            className="absolute bg-cyan-500 rounded-full pointer-events-none"
+            style={{
+              left: `${node.x}%`,
+              top: `${node.y}%`,
+              width: `${node.size}px`,
+              height: `${node.size}px`,
+              transform: "translate(-50%, -50%)",
+            }}
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.4, 1, 0.4],
+              boxShadow: [
+                "0 0 5px rgba(6, 182, 212, 0.5)",
+                "0 0 20px rgba(6, 182, 212, 0.8)",
+                "0 0 5px rgba(6, 182, 212, 0.5)",
+              ],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: node.delay,
               ease: "easeInOut",
             }}
           />
         ))}
+
+        {/* Matrix Rain Effect */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          {matrixColumns.map((column) => (
+            <div
+              key={column.id}
+              className="absolute top-0 text-green-400 text-xs font-mono pointer-events-none"
+              style={{ left: `${column.x}%` }}
+            >
+              {column.chars.map((char, i) => (
+                <motion.div
+                  key={i}
+                  className="pointer-events-none"
+                  animate={{
+                    y: ["-100vh", "100vh"],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    delay: column.delay + i * 0.1,
+                    ease: "linear",
+                  }}
+                >
+                  {char}
+                </motion.div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Scanning Lines */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{
+            background: [
+              "linear-gradient(90deg, transparent 0%, rgba(6, 182, 212, 0.1) 50%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, rgba(6, 182, 212, 0.1) 50%, transparent 100%)",
+            ],
+            x: ["-100%", "100%"],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 0%, rgba(6, 182, 212, 0.1) 50%, transparent 100%)",
+            height: "2px",
+            top: "40%",
+          }}
+        />
+
+        {/* Vertical Scanning Line */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{
+            background: [
+              "linear-gradient(0deg, transparent 0%, rgba(34, 197, 94, 0.1) 50%, transparent 100%)",
+              "linear-gradient(0deg, transparent 0%, rgba(34, 197, 94, 0.1) 50%, transparent 100%)",
+            ],
+            y: ["-100%", "100%"],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "linear",
+            delay: 2,
+          }}
+          style={{
+            background:
+              "linear-gradient(0deg, transparent 0%, rgba(34, 197, 94, 0.1) 50%, transparent 100%)",
+            width: "2px",
+            left: "60%",
+          }}
+        />
+
+        {/* Digital Particles */}
+        {[...Array(25)].map((_, i) => (
+          <motion.div
+            key={`particle-${i}`}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: Math.random() * 4 + 2,
+              height: Math.random() * 4 + 2,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              background: `rgba(${
+                Math.random() > 0.5 ? "6, 182, 212" : "34, 197, 94"
+              }, 0.6)`,
+            }}
+            animate={{
+              y: [0, (Math.random() - 0.5) * 200],
+              x: [0, (Math.random() - 0.5) * 200],
+              opacity: [0.2, 0.8, 0.2],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: Math.random() * 15 + 10,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut",
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+
+        {/* Hexagonal Grid Overlay */}
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <svg
+            className="w-full h-full"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2306B6D4' fill-opacity='0.1'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundSize: "60px 60px",
+            }}
+          />
+        </div>
       </div>
 
       <div className="relative" style={{ zIndex: 10 }}>
@@ -182,7 +416,7 @@ const Home = () => {
           >
             <motion.div variants={item} className="flex justify-center mb-6">
               <motion.div
-                className="px-4 py-2 bg-cyan-900/30 border border-cyan-500/50 rounded-full text-cyan-400 text-sm flex items-center"
+                className="px-4 py-2 bg-cyan-900/30 border border-cyan-500/50 rounded-full text-cyan-400 text-sm flex items-center backdrop-blur-sm"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -237,12 +471,12 @@ const Home = () => {
             >
               <Link
                 to="/register"
-                className="relative px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg text-white font-medium shadow-lg hover:shadow-xl transition-all cursor-pointer"
-                style={{ 
+                className="relative px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg text-white font-medium shadow-lg hover:shadow-xl transition-all cursor-pointer backdrop-blur-sm"
+                style={{
                   zIndex: 30,
                   position: "relative",
                   pointerEvents: "auto",
-                  display: "inline-block"
+                  display: "inline-block",
                 }}
               >
                 Get Protected Now
@@ -250,12 +484,12 @@ const Home = () => {
 
               <Link
                 to="/login"
-                className="relative px-8 py-4 bg-transparent border border-cyan-500/50 hover:bg-cyan-900/30 text-cyan-400 rounded-lg font-medium hover:shadow-lg transition-all cursor-pointer"
-                style={{ 
+                className="relative px-8 py-4 bg-transparent border border-cyan-500/50 hover:bg-cyan-900/30 text-cyan-400 rounded-lg font-medium hover:shadow-lg transition-all cursor-pointer backdrop-blur-sm"
+                style={{
                   zIndex: 30,
                   position: "relative",
                   pointerEvents: "auto",
-                  display: "inline-block"
+                  display: "inline-block",
                 }}
               >
                 Existing User? Login
@@ -312,7 +546,7 @@ const Home = () => {
 
         {/* Security Badges with Graphs */}
         <motion.div
-          className="py-16 bg-gray-800/30 border-t border-b border-gray-700/50 relative overflow-hidden"
+          className="py-16 bg-gray-800/30 border-t border-b border-gray-700/50 relative overflow-hidden backdrop-blur-sm"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1 }}
@@ -432,7 +666,7 @@ const Home = () => {
               ].map((stat, index) => (
                 <motion.div
                   key={index}
-                  className="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 hover:shadow-lg transition-all"
+                  className="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 hover:shadow-lg transition-all backdrop-blur-sm"
                   variants={item}
                   whileHover={{
                     y: -5,

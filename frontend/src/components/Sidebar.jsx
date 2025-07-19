@@ -11,19 +11,35 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // Check if mobile on mount and resize
+  // Improved mobile detection with debounce
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setOpen(true); // Always show on desktop
+      const mobileBreakpoint = 768;
+      const isMobileNow = window.innerWidth < mobileBreakpoint;
+      setIsMobile(isMobileNow);
+      
+      // Auto-close on mobile when resizing to desktop
+      if (!isMobileNow && open) {
+        setOpen(false);
       }
     };
 
+    // Initial check
     checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
+
+    // Debounced resize handler
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkIfMobile, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, [open]);
 
   // Load user info from localStorage
   useEffect(() => {
@@ -112,7 +128,7 @@ const Sidebar = () => {
       <AnimatePresence>
         {(!isMobile || open) && (
           <>
-            {/* Overlay for mobile */}
+            {/* Improved overlay for mobile */}
             {isMobile && open && (
               <motion.div
                 className="fixed inset-0 bg-black bg-opacity-50 z-30"
@@ -120,16 +136,24 @@ const Sidebar = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               />
             )}
             
             <motion.div
-              className={`fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white z-40 p-6 shadow-2xl`}
+              className={`fixed top-0 left-0 h-screen ${
+                isMobile ? "w-11/12 max-w-xs" : "w-64"
+              } bg-gradient-to-b from-gray-800 to-gray-900 text-white z-40 p-6 shadow-2xl`}
               initial={isMobile ? "closed" : "open"}
-              animate="open"
+              animate={open || !isMobile ? "open" : "closed"}
               exit={isMobile ? "closed" : "open"}
               variants={sidebarVariants}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30,
+                bounce: 0.1
+              }}
             >
               {/* Close Button on Mobile */}
               {isMobile && (
@@ -161,7 +185,9 @@ const Sidebar = () => {
                   {initial}
                 </motion.div>
                 <div>
-                  <div className="font-semibold text-lg">{user?.name || "User"}</div>
+                  <div className="font-semibold text-lg truncate max-w-[120px]">
+                    {user?.name || "User"}
+                  </div>
                   <div className="text-sm text-gray-300">Premium Member</div>
                 </div>
               </motion.div>
@@ -193,7 +219,7 @@ const Sidebar = () => {
                       >
                         {item.icon}
                       </motion.span>
-                      <span className="font-medium">{item.label}</span>
+                      <span className="font-medium truncate">{item.label}</span>
                       {location.pathname === item.path && (
                         <motion.div
                           layoutId="activeItem"
@@ -236,13 +262,13 @@ const Sidebar = () => {
       <AnimatePresence>
         {showLogoutModal && (
           <motion.div
-            className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-6 rounded-xl shadow-2xl w-[90%] max-w-sm border border-gray-700"
+              className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-6 rounded-xl shadow-2xl w-full max-w-sm border border-gray-700"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}

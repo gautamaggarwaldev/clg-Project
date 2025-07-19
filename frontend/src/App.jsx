@@ -25,7 +25,7 @@ import ResetPassword from "./pages/ResetPassword";
 function App() {
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
+      <ToastContainer position="top-right" autoClose={1000} theme="dark" />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
