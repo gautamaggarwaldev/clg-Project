@@ -107,8 +107,8 @@ const IpCheck = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        // `http://localhost:5005/v1/ip/report/${ip}`
-        `https://cs-qhmx.onrender.com/v1/ip/report/${ip}`
+        `http://localhost:5005/v1/ip/report/${ip}`
+        // `https://cs-qhmx.onrender.com/v1/ip/report/${ip}`
       );
 
       if (data.success) {

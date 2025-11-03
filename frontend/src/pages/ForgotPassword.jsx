@@ -13,8 +13,8 @@ const ForgotPassword = () => {
     if (!email) return toast.error('Please enter your email');
     setLoading(true);
     try {
-      // await axios.post('http://localhost:5005/v1/user/forgot-password', { email });
-      await axios.post('https://cs-qhmx.onrender.com/v1/user/forgot-password', { email });
+      await axios.post('http://localhost:5005/v1/user/forgot-password', { email });
+      // await axios.post('https://cs-qhmx.onrender.com/v1/user/forgot-password', { email });
       toast.success('Password reset link sent to your email!');
       setIsSubmitted(true);
     } catch (err) {

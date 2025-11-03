@@ -69,8 +69,8 @@ const Dashboard = () => {
 
   const getUserData = async () => {
     try {
-      // const res = await axios.get("http://localhost:5005/v1/user/profile", {
-      const res = await axios.get("https://cs-qhmx.onrender.com/v1/user/profile", {
+      const res = await axios.get("http://localhost:5005/v1/user/profile", {
+      // const res = await axios.get("https://cs-qhmx.onrender.com/v1/user/profile", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -85,20 +85,20 @@ const Dashboard = () => {
   const getAllScanData = async () => {
     try {
       const [urlRes, ipRes, domainRes] = await Promise.all([
-        // axios.get("http://localhost:5005/v1/url/scan-my-all", {
-        axios.get("https://cs-qhmx.onrender.com/v1/url/scan-my-all", {
+        axios.get("http://localhost:5005/v1/url/scan-my-all", {
+        // axios.get("https://cs-qhmx.onrender.com/v1/url/scan-my-all", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }),
-        // axios.get("http://localhost:5005/v1/ip/history", {
-        axios.get("https://cs-qhmx.onrender.com/v1/ip/history", {
+        axios.get("http://localhost:5005/v1/ip/history", {
+        // axios.get("https://cs-qhmx.onrender.com/v1/ip/history", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }),
-        // axios.get("http://localhost:5005/v1/domain/history", {
-        axios.get("https://cs-qhmx.onrender.com/v1/domain/history", {
+        axios.get("http://localhost:5005/v1/domain/history", {
+        // axios.get("https://cs-qhmx.onrender.com/v1/domain/history", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

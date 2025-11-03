@@ -11,8 +11,8 @@ const AIDomainReport = ({ domainData }) => {
     setSummary(null);
 
     try {
-      // const res = await axios.post("http://localhost:5005/v1/ai/domain-summary", domainData);
-      const res = await axios.post("https://cs-qhmx.onrender.com/v1/ai/domain-summary", domainData);
+      const res = await axios.post("http://localhost:5005/v1/ai/domain-summary", domainData);
+      // const res = await axios.post("https://cs-qhmx.onrender.com/v1/ai/domain-summary", domainData);
       if (res.data.success) {
         const summaryText = res.data.data.summary;
 

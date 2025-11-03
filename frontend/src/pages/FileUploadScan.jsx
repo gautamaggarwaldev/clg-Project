@@ -87,8 +87,8 @@ const FileUploadScan = () => {
       formData.append("file", file);
 
       const uploadRes = await axios.post(
-        "https://cs-qhmx.onrender.com/v1/file/upload",
-        // "http://localhost:5005/v1/file/upload",
+        // "https://cs-qhmx.onrender.com/v1/file/upload",
+        "http://localhost:5005/v1/file/upload",
         formData,
         {
           headers: {
@@ -110,8 +110,8 @@ const FileUploadScan = () => {
       while (attempts < maxAttempts) {
         try {
           reportRes = await axios.get(
-            `https://cs-qhmx.onrender.com/v1/file/report/${scanId}`
-            // `http://localhost:5005/v1/file/report/${scanId}`
+            // `https://cs-qhmx.onrender.com/v1/file/report/${scanId}`
+            `http://localhost:5005/v1/file/report/${scanId}`
           );
 
           if (reportRes.data.data.status === "completed") {

@@ -63,8 +63,8 @@ const HashReport = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        // `http://localhost:5005/v1/file/hash-report/${hashInput}`
-        `https://cs-qhmx.onrender.com/v1/file/hash-report/${hashInput}`
+        `http://localhost:5005/v1/file/hash-report/${hashInput}`
+        // `https://cs-qhmx.onrender.com/v1/file/hash-report/${hashInput}`
       );
 
       if (data.data.status === "queued") {
