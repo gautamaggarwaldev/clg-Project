@@ -21,6 +21,7 @@ import CyberNews from "./pages/CyberNews";
 import DarkWebScanner from "./pages/DarkWebScanner";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import PasswordDesign from "./pages/PasswordDesign";
 
 function App() {
   return (
@@ -91,6 +92,14 @@ function App() {
           element={
             <PrivateRoute>
               <DarkWebScanner />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/password-generator"
+          element={
+            <PrivateRoute>
+              <PasswordDesign />
             </PrivateRoute>
           }
         />

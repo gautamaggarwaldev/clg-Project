@@ -219,3 +219,11 @@ a:hover, button:hover {
   outline: 2px solid blue !important;
   outline-offset: 2px;
 }
+
+/* Fix for framer-motion buttons */
+motion-button,
+[class*="motion"] button,
+button[class*="absolute"] {
+  pointer-events: auto !important;
+  z-index: 35 !important;
+}
