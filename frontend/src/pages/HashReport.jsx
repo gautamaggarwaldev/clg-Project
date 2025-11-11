@@ -68,7 +68,8 @@ const HashReport = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `http://localhost:5005/v1/file/hash-report/${hashInput}`
+        // `http://localhost:5005/v1/file/hash-report/${hashInput}`
+        `https://cs-qhmx.onrender.com/v1/file/hash-report/${hashInput}`
       );
 
       if (data.data.status === "queued") {
@@ -99,7 +100,8 @@ const HashReport = () => {
 
     try {
       console.log("Sending AI analysis request for hash...");
-      const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      // const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      const response = await fetch("https://cs-qhmx.onrender.com/v1/ai/analyze-report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -54,7 +54,8 @@ const FileUploadScan = () => {
       formData.append("file", file);
 
       const uploadRes = await axios.post(
-        "http://localhost:5005/v1/file/upload",
+        // "http://localhost:5005/v1/file/upload",
+        "https://cs-qhmx.onrender.com/v1/file/upload",
         formData,
         {
           headers: {
@@ -76,7 +77,8 @@ const FileUploadScan = () => {
       while (attempts < maxAttempts) {
         try {
           reportRes = await axios.get(
-            `http://localhost:5005/v1/file/report/${scanId}`
+            // `http://localhost:5005/v1/file/report/${scanId}`
+            `https://cs-qhmx.onrender.com/v1/file/report/${scanId}`
           );
 
           if (reportRes.data.data.status === "completed") {
@@ -134,7 +136,8 @@ const FileUploadScan = () => {
 
     try {
       console.log("Sending AI analysis request for file...");
-      const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      // const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      const response = await fetch("https://cs-qhmx.onrender.com/v1/ai/analyze-report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

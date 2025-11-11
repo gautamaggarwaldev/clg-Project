@@ -75,7 +75,8 @@ const IpCheck = () => {
 
     try {
       const { data } = await axios.get(
-        `http://localhost:5005/v1/ip/report/${ip}`
+        // `http://localhost:5005/v1/ip/report/${ip}`
+        `https://cs-qhmx.onrender.com/v1/ip/report/${ip}`
       );
 
       if (data.success) {
@@ -128,7 +129,8 @@ const IpCheck = () => {
 
     try {
       console.log("Sending AI analysis request for IP...");
-      const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      // const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      const response = await fetch("https://cs-qhmx.onrender.com/v1/ai/analyze-report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

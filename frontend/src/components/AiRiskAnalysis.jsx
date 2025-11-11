@@ -16,8 +16,8 @@ const AIRiskAnalysis = ({ scanType, stats, results, meta }) => {
     setAiReport("");
 
     try {
-      const { data } = await axios.post("http://localhost:5005/v1/ai/analyze-report", {
-      // const { data } = await axios.post("https://cs-qhmx.onrender.com/v1/ai/analyze-report", {
+      // const { data } = await axios.post("http://localhost:5005/v1/ai/analyze-report", {
+      const { data } = await axios.post("https://cs-qhmx.onrender.com/v1/ai/analyze-report", {
         scanType,
         stats,
         results,

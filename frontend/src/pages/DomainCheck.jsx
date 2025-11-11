@@ -59,7 +59,8 @@ const DomainCheck = () => {
 
     try {
       const cleanDomain = domain.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
-      const apiUrl = `http://localhost:5005/v1/domain/report/${cleanDomain}`;
+      // const apiUrl = `http://localhost:5005/v1/domain/report/${cleanDomain}`;
+      const apiUrl = `https://cs-qhmx.onrender.com/v1/domain/report/${cleanDomain}`;
 
       const { data } = await axios.get(apiUrl, {
         timeout: 30000,
@@ -117,7 +118,8 @@ const DomainCheck = () => {
 
     try {
       console.log("Sending AI analysis request for domain...");
-      const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      // const response = await fetch("http://localhost:5005/v1/ai/analyze-report", {
+      const response = await fetch("https://cs-qhmx.onrender.com/v1/ai/analyze-report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

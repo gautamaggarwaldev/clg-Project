@@ -30,7 +30,8 @@ const DarkWebScanner = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5005/v1/dark-web-scanner/check-breach",
+        // "http://localhost:5005/v1/dark-web-scanner/check-breach",
+        "https://cs-qhmx.onrender.com/v1/dark-web-scanner/check-breach",
         { email }
       );
       setBreachData(res.data);

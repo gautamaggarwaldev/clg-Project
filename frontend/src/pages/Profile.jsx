@@ -42,8 +42,8 @@ const Profile = () => {
     setIsUpdating(true);
     const token = localStorage.getItem('token');
     try {
-      await axios.put('http://localhost:5005/v1/user/update-profile', form, {
-      // await axios.put('https://cs-qhmx.onrender.com/v1/user/update-profile', form, {
+      // await axios.put('http://localhost:5005/v1/user/update-profile', form, {
+      await axios.put('https://cs-qhmx.onrender.com/v1/user/update-profile', form, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

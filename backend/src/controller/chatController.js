@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 const SYSTEM_PROMPT = `
 # Cybersecurity Assistant System Prompt
@@ -152,62 +152,3 @@ export const chatWithAI = async (req, res) => {
   }
 };
 
-
-// export const chatWithAI = async (req, res) => {
-//   try {
-//     const { message } = req.body;
-//     const file = req.file;
-
-//     const userInput = `${SYSTEM_PROMPT}\nUser: ${message}`;
-
-//     let responseText;
-
-//     if (file) {
-//       const filePath = path.resolve(file.path);
-//       const mimeType = file.mimetype;
-
-//       const filePart = {
-//         inlineData: {
-//           mimeType,
-//           data: fs.readFileSync(filePath).toString("base64"),
-//         },
-//       };
-
-//       const result = await model.generateContent({
-//         contents: [
-//           {
-//             role: "user",
-//             parts: [filePart, { text: userInput }],
-//           },
-//         ],
-//       });
-
-//       fs.unlinkSync(filePath); // Clean up temp file
-
-//       responseText = result.response.text();
-//     } else {
-//       const result = await model.generateContent({
-//         contents: [
-//           {
-//             role: "user",
-//             parts: [{ text: userInput }],
-//           },
-//         ],
-//       });
-
-//       responseText = result.response.text();
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       response: responseText,
-//     });
-//   } catch (error) {
-//     console.error("AI Chat Error:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "AI chat failed",
-//       error: error.message,
-//     });
-//   }
-// };

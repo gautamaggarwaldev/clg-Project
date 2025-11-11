@@ -23,10 +23,10 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      await axios.post(`http://localhost:5005/v1/user/reset-password/${token}`, {
-      // await axios.post(
-        // `https://cs-qhmx.onrender.com/v1/user/reset-password/${token}`,
-        // {
+      // await axios.post(`http://localhost:5005/v1/user/reset-password/${token}`, {
+      await axios.post(
+        `https://cs-qhmx.onrender.com/v1/user/reset-password/${token}`,
+        {
           newPassword,
           confirmPassword,
         }
