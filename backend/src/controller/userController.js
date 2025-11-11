@@ -117,7 +117,7 @@ const forgotPassword = async (req, res) => {
       },
     });
 
-    const resetLink = `http://localhost:5173/reset-password/${token}`; //frontend route change in future
+    const resetLink = `https://clg-project-kappa.vercel.app/reset-password/${token}`; //frontend route change in future
 
     const emailHtml = loadTemplate('password-reset', {
       resetLink,
